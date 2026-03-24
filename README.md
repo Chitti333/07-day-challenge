@@ -145,5 +145,4 @@ Feel free to fork, follow along, or build your own version of this challenge!
 
 ```
 
----
 
