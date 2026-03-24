@@ -1,6 +1,3 @@
-
-
-````markdown
 # 🚀 7 Days Challenge – Build > Learn > Iterate
 
 ## 🎯 Objective
@@ -60,7 +57,7 @@ Each day follows a **build-driven loop**:
 
 ## 📝 Daily Tracking Template
 
-```txt
+```text
 📅 Day X
 
 🔨 What I built:
@@ -83,19 +80,17 @@ Each day follows a **build-driven loop**:
 
 ❓ Doubts:
 -
-````
-
----
+```
 
 ## ❓ Key Concepts I'm Exploring
 
-* Node.js fundamentals
-* APIs (REST architecture, request/response)
-* SQL and database access
-* SSH (Secure Shell for authentication)
-* GitHub vs GitLab
-* GitHub Actions (automation & CI/CD)
-* How real-world app features are implemented
+- Node.js fundamentals
+- APIs (REST architecture, request/response)
+- SQL and database access
+- SSH (Secure Shell for authentication)
+- GitHub vs GitLab
+- GitHub Actions (automation & CI/CD)
+- How real-world app features are implemented
 
 ---
 
@@ -103,21 +98,21 @@ Each day follows a **build-driven loop**:
 
 Building a **Full-Stack + AI-powered application**, which may include:
 
-* Task or productivity tracking
-* Backend APIs
-* Database integration
-* AI-powered features (suggestions / chatbot)
-* Clean GitHub workflow with commits and automation
+- Task or productivity tracking
+- Backend APIs
+- Database integration
+- AI-powered features (suggestions / chatbot)
+- Clean GitHub workflow with commits and automation
 
 ---
 
 ## 🧠 Approach
 
-* Learn *just-in-time*, not everything upfront
-* Break problems into small parts
-* Google, debug, and experiment actively
-* Focus on consistency (3–5 hours daily)
-* Document everything
+- Learn *just-in-time*, not everything upfront
+- Break problems into small parts
+- Google, debug, and experiment actively
+- Focus on consistency (3–5 hours daily)
+- Document everything
 
 ---
 
@@ -125,10 +120,10 @@ Building a **Full-Stack + AI-powered application**, which may include:
 
 By the end of 7 days:
 
-* A functional full-stack project with AI integration
-* Stronger understanding of backend + APIs + DB
-* Hands-on experience with GitHub workflows
-* Improved confidence in building and debugging
+- A functional full-stack project with AI integration
+- Stronger understanding of backend + APIs + DB
+- Hands-on experience with GitHub workflows
+- Improved confidence in building and debugging
 
 ---
 
@@ -142,7 +137,3 @@ it’s about **showing up, building daily, and improving continuously**.
 ### ⭐ If you're reading this:
 
 Feel free to fork, follow along, or build your own version of this challenge!
-
-```
-
-
