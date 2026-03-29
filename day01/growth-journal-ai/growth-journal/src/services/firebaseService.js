@@ -1,3 +1,13 @@
+// import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js'
+// import {
+//     getAuth, signInWithPopup,
+//     GoogleAuthProvider, signOut, onAuthStateChanged
+// } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js'
+// import {
+//     getFirestore, collection, addDoc,
+//     getDocs, orderBy, query, doc, getDoc
+// } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js'
+// Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app'
 import {
     getAuth, signInWithPopup,
@@ -5,9 +15,8 @@ import {
 } from 'firebase/auth'
 import {
     getFirestore, collection, addDoc,
-    getDocs, orderBy, query, doc, getDoc
+    getDocs, orderBy, query
 } from 'firebase/firestore'
-
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -15,7 +24,8 @@ const firebaseConfig = {
     storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
     appId: import.meta.env.VITE_FIREBASE_APP_ID,
-}
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+};
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
@@ -62,3 +72,8 @@ export async function loadEntries(uid) {
         return []
     }
 }
+
+console.log('Keys loaded:', {
+    firebase: firebaseConfig.apiKey?.slice(0, 8),
+    openrouter: import.meta.env.VITE_OPENROUTER_API_KEY?.slice(0, 8)
+})
