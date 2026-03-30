@@ -2,7 +2,11 @@ import { useState } from 'react'
 import { analyzeJournal } from '../services/aiService'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 
-export default function JournalInput({ onInsightsReady }) {
+// Add books and hobbies to props:
+export default function JournalInput({ onInsightsReady, books = [], hobbies = [] }) {
+
+    // Update the analyzeJournal call to pass them:
+
     const [entry, setEntry] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState('')
@@ -17,10 +21,11 @@ export default function JournalInput({ onInsightsReady }) {
         setIsLoading(true)
         setError('')
 
-        const result = await analyzeJournal(entry)
+        // const result = await analyzeJournal(entry)
+        const result = await analyzeJournal(entry, books, hobbies)
 
         if (result.success) {
-            onInsightsReady(result.data)
+            onInsightsReady(result.data, entry)
         } else {
             setError(result.error)
         }

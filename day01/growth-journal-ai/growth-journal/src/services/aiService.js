@@ -1,6 +1,6 @@
-const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
+const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY
 
-const buildPrompt = (journalEntry) => `
+const buildPrompt = (journalEntry, books = [], hobbies = []) => `
 You are a compassionate personal growth assistant.
 Analyze the following journal entry and extract structured insights.
 
@@ -8,21 +8,35 @@ Return ONLY a valid JSON object — no explanation, no markdown, no extra text.
 Use this exact structure:
 
 {
-  "happy": ["list of things that made the person happy"],
-  "sad": ["list of things that made them sad or stressed"],
-  "gratitude": ["things they are or should be grateful for"],
-  "learnings": ["key lessons or realizations from the day"],
-  "motivation": "one short motivational sentence based on their day",
-  "keyTakeaway": "the single most important insight from this entry",
-  "tasksForTomorrow": ["actionable tasks they should do tomorrow"],
-  "habitsDetected": ["recurring behaviors or patterns noticed"]
+  "happy": ["things that made the person happy"],
+  "sad": ["things that made them sad or stressed"],
+  "gratitude": ["things they are grateful for"],
+  "learnings": ["key lessons or realizations"],
+  "motivation": "one short motivational sentence",
+  "keyTakeaway": "the single most important insight",
+  "tasksForTomorrow": ["actionable tasks for tomorrow"],
+  "habitsDetected": ["recurring behaviors or patterns"],
+  "trackerUpdates": {
+    "books": [],
+    "hobbies": []
+  }
 }
 
-Rules:
-- If a category has nothing relevant, return an empty array [] or empty string ""
+Rules for main fields:
+- If nothing relevant, return empty array [] or empty string ""
 - Keep each item concise (max 10 words)
 - Be empathetic and constructive
-- Infer tasks and habits even if not explicitly stated
+
+Rules for trackerUpdates:
+- "books": look for any mention of reading pages. 
+  If found, return: [{ "title": "exact book title mentioned", "pagesRead": number }]
+  Match against these existing books if possible: ${books.map(b => b.title).join(', ') || 'none yet'}
+  
+- "hobbies": look for any hobby activity mentioned (gym, cricket, writing, meditation, etc).
+  Return list of hobby names detected: ["cricket", "gym"]
+  Match against these existing hobbies if possible: ${hobbies.map(h => h.name).join(', ') || 'none yet'}
+  
+- If no tracker updates found, return empty arrays for both
 
 Journal Entry:
 """
@@ -30,47 +44,51 @@ ${journalEntry}
 """
 `
 
-export async function analyzeJournal(journalEntry) {
-  try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'http://localhost:5173',
-        'X-Title': 'Growth Journal'
-      },
-      body: JSON.stringify({
-        model: 'meta-llama/llama-3.1-8b-instruct',
-        messages: [
-          {
-            role: 'user',
-            content: buildPrompt(journalEntry)
-          }
-        ],
-        max_tokens: 1024,
-        temperature: 0.7
-      })
+const MODELS = [
+  'gemini-2.5-flash-lite',
+  'gemini-3.1-flash-live-preview',
+  'gemini-3.1-pro-preview',
+  'gemini-3-flash-preview',
+  'gemini-2.5-flash',
+
+  'gemini-1.5-flash-latest',
+  'gemini-1.5-flash-8b',
+
+  'gemini-1.0-pro',
+]
+
+async function tryModel(modelName, prompt) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_KEY}`
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
     })
-
-    if (!response.ok) {
-      const errData = await response.json()
-      throw new Error(errData?.error?.message || `HTTP ${response.status}`)
-    }
-
-    const data = await response.json()
-    const text = data.choices?.[0]?.message?.content
-
-    if (!text) throw new Error('Empty response from AI')
-
-    // Strip markdown code fences if model adds them
-    const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim()
-    const insights = JSON.parse(cleaned)
-
-    return { success: true, data: insights }
-
-  } catch (error) {
-    console.error('AI error:', error)
-    return { success: false, error: error.message || 'Unknown error' }
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err?.error?.message || `HTTP ${res.status}`)
   }
+  const data = await res.json()
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text
+  if (!text) throw new Error('Empty response')
+  return text
+}
+
+export async function analyzeJournal(journalEntry, books = [], hobbies = []) {
+  const prompt = buildPrompt(journalEntry, books, hobbies)
+  for (const model of MODELS) {
+    try {
+      const text = await tryModel(model, prompt)
+      const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim()
+      const insights = JSON.parse(cleaned)
+      return { success: true, data: insights }
+    } catch (err) {
+      console.warn(`Model ${model} failed:`, err.message)
+      continue
+    }
+  }
+  return { success: false, error: 'Analysis failed. Check your Gemini API key.' }
 }

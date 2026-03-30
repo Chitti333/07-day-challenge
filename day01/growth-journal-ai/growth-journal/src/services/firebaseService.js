@@ -73,7 +73,102 @@ export async function loadEntries(uid) {
     }
 }
 
-console.log('Keys loaded:', {
-    firebase: firebaseConfig.apiKey?.slice(0, 8),
-    openrouter: import.meta.env.VITE_OPENROUTER_API_KEY?.slice(0, 8)
-})
+// ── Books ──────────────────────────────────────────
+
+export async function saveBook(uid, book) {
+    try {
+        const ref = await addDoc(
+            collection(db, 'users', uid, 'books'),
+            { ...book, createdAt: new Date() }
+        )
+        return { success: true, id: ref.id }
+    } catch (e) {
+        return { success: false, error: e.message }
+    }
+}
+
+export async function loadBooks(uid) {
+    try {
+        const q = query(
+            collection(db, 'users', uid, 'books'),
+            orderBy('createdAt', 'desc')
+        )
+        const snap = await getDocs(q)
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }))
+    } catch (e) {
+        console.error(e)
+        return []
+    }
+}
+
+export async function updateBook(uid, bookId, updates) {
+    try {
+        const { doc: fsDoc, updateDoc } = await import('firebase/firestore')
+        const ref = fsDoc(db, 'users', uid, 'books', bookId)
+        await updateDoc(ref, updates)
+        return { success: true }
+    } catch (e) {
+        return { success: false, error: e.message }
+    }
+}
+
+export async function deleteBook(uid, bookId) {
+    try {
+        const { doc: fsDoc, deleteDoc } = await import('firebase/firestore')
+        const ref = fsDoc(db, 'users', uid, 'books', bookId)
+        await deleteDoc(ref)
+        return { success: true }
+    } catch (e) {
+        return { success: false, error: e.message }
+    }
+}
+
+// ── Hobbies ────────────────────────────────────────
+
+export async function saveHobby(uid, hobby) {
+    try {
+        const ref = await addDoc(
+            collection(db, 'users', uid, 'hobbies'),
+            { ...hobby, createdAt: new Date(), logs: [] }
+        )
+        return { success: true, id: ref.id }
+    } catch (e) {
+        return { success: false, error: e.message }
+    }
+}
+
+export async function loadHobbies(uid) {
+    try {
+        const q = query(
+            collection(db, 'users', uid, 'hobbies'),
+            orderBy('createdAt', 'desc')
+        )
+        const snap = await getDocs(q)
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }))
+    } catch (e) {
+        console.error(e)
+        return []
+    }
+}
+
+export async function updateHobby(uid, hobbyId, updates) {
+    try {
+        const { doc: fsDoc, updateDoc } = await import('firebase/firestore')
+        const ref = fsDoc(db, 'users', uid, 'hobbies', hobbyId)
+        await updateDoc(ref, updates)
+        return { success: true }
+    } catch (e) {
+        return { success: false, error: e.message }
+    }
+}
+
+export async function deleteHobby(uid, hobbyId) {
+    try {
+        const { doc: fsDoc, deleteDoc } = await import('firebase/firestore')
+        const ref = fsDoc(db, 'users', uid, 'hobbies', hobbyId)
+        await deleteDoc(ref)
+        return { success: true }
+    } catch (e) {
+        return { success: false, error: e.message }
+    }
+}

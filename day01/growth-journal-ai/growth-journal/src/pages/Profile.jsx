@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/authContext'
+import { useAuth } from '../context/AuthContext'
 import { logout, loadEntries } from '../services/firebaseService'
 
 const PIN_COLORS = [
@@ -119,6 +119,20 @@ export default function Profile() {
                     <span className="font-bold text-gray-800">Growth Journal</span>
                 </div>
                 <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => navigate('/trackers')}
+                        className="text-xs border border-gray-200 text-gray-600 px-4 py-2
+             rounded-full hover:bg-gray-50 transition-colors font-medium"
+                    >
+                        📊 Trackers
+                    </button>
+                    <button
+                        onClick={() => navigate('/history')}
+                        className="text-xs border border-gray-200 text-gray-600 px-4 py-2
+             rounded-full hover:bg-gray-50 transition-colors font-medium"
+                    >
+                        📖 Diary
+                    </button>
                     <button
                         onClick={() => navigate('/journal')}
                         className="bg-gray-900 text-white text-xs px-4 py-2 
